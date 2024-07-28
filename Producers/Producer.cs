@@ -17,7 +17,7 @@ namespace Producer.Producers
             _exchangeType = exchangeType;
             _routingKey = routingKey;
             _model = model;
-            _model.ExchangeDeclare(_exchangeName, _exchangeType);
+            _model.ExchangeDeclare(_exchangeName, _exchangeType);//объ€вл€ю обменник
         }
         
         public void Produce(string messageContent)
@@ -26,12 +26,14 @@ namespace Producer.Producers
             {
                 Content = $"{messageContent} (exchange: {_exchangeType})"
             };
+            //содержимое должно быть сериализовано
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-            
+            //сообщение в реббите - маршрутно адресна€ инфлормаци€
+            //exchange: _exchangeName, - наименование обменника, может быть несколько
             _model.BasicPublish(exchange: _exchangeName,
-                routingKey: _routingKey,
-                basicProperties: null,
-                body: body);
+                routingKey: _routingKey,//маршрутный ключ
+                basicProperties: null,//хедеры если нужны
+                body: body);//содержимое сообщени€
 
             Console.WriteLine($"Message is sent into Default Exchange: {_exchangeName}");
         }

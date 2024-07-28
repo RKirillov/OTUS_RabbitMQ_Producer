@@ -12,9 +12,11 @@ namespace Producer
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
+            //связь с докер физический канал связи
             var connection = GetRabbitConnection(configuration);
+            //виртуальный канал, вся работа через него. потом закроем.
             var channel = connection.CreateModel();
-            
+
             var producer = new Producers.Producer("direct", "exchange.direct", "cars.1", channel);
             //var producer = new Producers.Producer("fanout", "exchange.fanout", "cars.1", channel);
             //var producer = new Producers.Producer("topic", "exchange.topic", "cars.1", channel);
@@ -27,7 +29,7 @@ namespace Producer
                 Thread.Sleep(TimeSpan.FromSeconds(1)); // Имитация долгой обработки
             }
             */
-            
+            // в конце все закрываем
             channel.Close();
             connection.Close();
         }
